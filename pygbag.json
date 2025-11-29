@@ -1,1 +1,5 @@
-
+{
+  "name": "North Pole Invaders",
+  "main": "main.py",
+  "cache_id": "v1.2"
+}
