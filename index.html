@@ -2,17 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>North Pole Invaders</title>
+    <title>North Pole Invaders - Merry Christmas!</title>
     <style>
-        body { margin:0; background:#000; overflow:hidden; }
-        #pgb { width:100vw; height:100vh; }
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background: linear-gradient(to bottom, #001122, #003366); /* Festive night sky */
+            overflow: hidden; 
+            font-family: Arial, sans-serif;
+            color: #FFD700; /* Gold text */
+        }
+        #pgb { 
+            width: 100vw; 
+            height: 100vh; 
+            display: block; 
+        }
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 100;
+        }
     </style>
 </head>
 <body>
+    <div class="loading">Loading North Pole Invaders... Ho ho ho! 🎄</div>
     <div id="pgb"></div>
-    <script src="https://cdn.jsdelivr.net/pygb/v0.9.7/pygbag.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/pygbag/v0.9.7/pygbag.min.js"></script>
     <script>
-        pygbag.main({ url: "main.py" });
+        pygbag.main({ 
+            url: "main.py",
+            onInit: function() {
+                document.querySelector('.loading').style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>
