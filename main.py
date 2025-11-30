@@ -182,8 +182,13 @@ while running:
     # "Controls!" on the RIGHT side
     merry_right = font.render("Space Bar = Fire, Arrows = Move", True, RED)
     right_rect = merry_right.get_rect(midright=(WIDTH-20, HEIGHT - 50))
-    pygame.draw.rect(screen, DARK_GREEN, (right_rect.x-10, right_rect.y-5, right_rect.width+20, right_rect.height+10))
-    pygame.draw.rect(screen, WHITE, (right_rect.x-5, right_rect.y, right_rect.width+10, right_rect.height), 2)
+
+    pygame.draw.rect(screen, DARK_GREEN, (right_rect.top=0,right_rect.width+20, right_rect.height+10))
+    pygame.draw.rect(screen, WHITE, (right_rect.top=0, right_rect.width+10, right_rect.height), 2)
+
+    
+    # pygame.draw.rect(screen, DARK_GREEN, (right_rect.x-10, right_rect.y-5, right_rect.width+20, right_rect.height+10))
+    # pygame.draw.rect(screen, WHITE, (right_rect.x-5, right_rect.y, right_rect.width+10, right_rect.height), 2)
     screen.blit(merry_right, right_rect)  
     
     
