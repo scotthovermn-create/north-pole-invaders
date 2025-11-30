@@ -229,7 +229,7 @@ while running:
             christmas_font_med.render(lines[1], True, GOLD),
             christmas_font_small.render(lines[2], True, GOLD),
             christmas_font_small.render(lines[3], True, GOLD)
-
+        ]
         # Victory stars
         for _ in range(50):
             a = random.random() * 6.28
