@@ -88,7 +88,7 @@ def spawn_invaders():
 
 spawn_invaders()
 direction = 1
-speed = 1.8
+speed = 1
 
 running = True
 while running:
