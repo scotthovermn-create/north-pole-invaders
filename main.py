@@ -181,32 +181,23 @@ while running:
     #                                 text_rect.width+20, text_rect.height+6), 2)
     # screen.blit(merry_text, text_rect)
 
-    # === REAL FESTIVE FONT FOR EVERYTHING ===
+     # REAL CURSIVE CHRISTMAS FONT (actually spells words!)
     try:
-        christmas_font_big   = pygame.font.Font("assets/JandaChristmasDoodles.ttf", 72)  # Title
-        christmas_font_med   = pygame.font.Font("assets/JandaChristmasDoodles.ttf", 56)  # Victory main lines
-        christmas_font_small = pygame.font.Font("assets/JandaChristmasDoodles.ttf", 44)  # Victory small lines
+        # This one is real cursive letters — looks like a Christmas card!
+        christmas_font_big   = pygame.font.Font("assets/MountainsOfChristmas.ttf", 78)
+        christmas_font_med   = pygame.font.Font("assets/MountainsOfChristmas.ttf", 62)
+        christmas_font_small = pygame.font.Font("assets/MountainsOfChristmas.ttf", 48)
     except:
-        # Fallback if something goes wrong (will never happen if file is there)
+        # Safe fallback
         christmas_font_big   = pygame.font.SysFont("comicsansms", 72, bold=True, italic=True)
         christmas_font_med   = pygame.font.SysFont("comicsansms", 56, bold=True)
         christmas_font_small = pygame.font.SysFont("comicsansms", 44)
 
-    # "Merry Christmas" at the top — now REAL cursive!
+    # Title — now REAL cursive!
     title_surf = christmas_font_big.render("Merry Christmas", True, GOLD)
     title_rect = title_surf.get_rect(center=(WIDTH // 2, 60))
     screen.blit(title_surf, title_rect)
 
-    # Twinkling lights around the title (same as before)
-    for i in range(32):
-        angle = i * 0.196
-        radius = 110 + 12 * math.sin(pygame.time.get_ticks() * 0.004 + i)
-        x = WIDTH // 2 + math.cos(angle) * radius
-        y = 60 + math.sin(angle) * 45
-        brightness = 180 + 75 * math.sin(pygame.time.get_ticks() * 0.007 + i)
-        col = [(255,0,0),(0,255,0),(255,215,0),(0,255,255),(255,100,200)][i%5]
-        color = tuple(min(255, int(c * brightness/255)) for c in col)
-        pygame.draw.circle(screen, color, (int(x), int(y)), 5)
 
      
 
@@ -225,7 +216,7 @@ while running:
         screen.blit(over_text, over_text.get_rect(center=(WIDTH//2, HEIGHT//2-30)))
         screen.blit(font.render("Press R to Restart", True, WHITE), (WIDTH//2-150, HEIGHT//2+30))
 
-     # === VICTORY SCREEN WITH SAME FESTIVE FONT ===
+     # Victory screen — same real font!
     elif victory:
         lines = [
             "Blitzen the Reindeer & You",
@@ -233,26 +224,11 @@ while running:
             "from the Evil Grinch!",
             "The Skies are Clear Again!"
         ]
-
-        # Use the real Christmas font!
         rendered = [
             christmas_font_med.render(lines[0], True, GOLD),
             christmas_font_med.render(lines[1], True, GOLD),
             christmas_font_small.render(lines[2], True, GOLD),
             christmas_font_small.render(lines[3], True, GOLD)
-        ]
-
-        total_h = sum(r.get_height() + 10 for r in rendered) - 10
-        y = HEIGHT // 2 - total_h // 2 - 30
-
-        for surf in rendered:
-            rect = surf.get_rect(center=(WIDTH // 2, y))
-            # Glow
-            glow = pygame.Surface((rect.width + 50, rect.height + 30), pygame.SRCALPHA)
-            pygame.draw.rect(glow, (255, 100, 100, 60), glow.get_rect(), border_radius=20)
-            screen.blit(glow, (rect.x - 25, rect.y - 15))
-            screen.blit(surf, rect)
-            y += surf.get_height() + 15
 
         # Victory stars
         for _ in range(50):
