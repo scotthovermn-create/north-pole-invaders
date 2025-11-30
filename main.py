@@ -181,39 +181,38 @@ while running:
     #                                 text_rect.width+20, text_rect.height+6), 2)
     # screen.blit(merry_text, text_rect)
     
-       # FESTIVE CURSIVE "Merry Christmas" WITH TWINKLING LIGHTS
+        # REAL CHRISTMAS FONT + TWINKLING LIGHTS
     try:
-        # Try a real cursive font first (looks amazing if available)
-        festive_font = pygame.font.SysFont("Brush Script MT, Lucida Handwriting, cursive", 48, bold=True)
+        # Load the real festive font you just uploaded
+        festive_font = pygame.font.Font("assets/JandaChristmasDoodles.ttf", 68)
+        merry_surf = festive_font.render("Merry Christmas", True, GOLD)
     except:
-        # Fallback to built-in with italic+bold for cursive feel
+        # Fallback if something goes wrong
         festive_font = pygame.font.SysFont("comicsansms", 52, bold=True, italic=True)
+        merry_surf = festive_font.render("Merry Christmas", True, GOLD)
 
-    merry_surf = festive_font.render("Merry Christmas", True, GOLD)
     merry_rect = merry_surf.get_rect(center=(WIDTH // 2, 50))
 
-    # Draw soft glow behind text
-    glow = pygame.Surface((merry_rect.width + 40, merry_rect.height + 30), pygame.SRCALPHA)
-    pygame.draw.rect(glow, (255, 220, 100, 50), (0, 0, glow.get_width(), glow.get_height()), border_radius=20)
-    screen.blit(glow, (merry_rect.x - 20, merry_rect.y - 15))
+    # Soft glow
+    glow = pygame.Surface((merry_rect.width + 50, merry_rect.height + 40), pygame.SRCALPHA)
+    pygame.draw.rect(glow, (255, 240, 180, 60), glow.get_rect(), border_radius=25)
+    screen.blit(glow, (merry_rect.x - 25, merry_rect.y - 20))
 
-    # Draw text
+    # Draw the real cursive text
     screen.blit(merry_surf, merry_rect)
 
-    # Twinkling Christmas lights around it
-    light_colors = [(255,0,0), (0,255,0), (255,255,0), (0,255,255), (255,100,255)]
-    for i in range(30):
-        angle = i / 30 * 3.14159 * 2
-        radius = 100 + 15 * math.sin(pygame.time.get_ticks() * 0.003 + i)
+    # Twinkling lights (same as before — kept because you liked them!)
+    light_colors = [(255,0,0), (0,255,0), (255,215,0), (0,255,255), (255,100,200)]
+    for i in range(32):
+        angle = i * 0.196  # 32 points = perfect circle
+        radius = 110 + 12 * math.sin(pygame.time.get_ticks() * 0.004 + i)
         x = WIDTH // 2 + math.cos(angle) * radius
-        y = 50 + math.sin(angle) * 40
-        brightness = 180 + 75 * math.sin(pygame.time.get_ticks() * 0.008 + i)
-        color = light_colors[i % len(light_colors)]
-        color = (min(255, int(color[0] * brightness/255)), 
-                 min(255, int(color[1] * brightness/255)), 
-                 min(255, int(color[2] * brightness/255)))
-        pygame.draw.circle(screen, color, (int(x), int(y)), 4)
-        pygame.draw.circle(screen, (255,255,200), (int(x), int(y)), 2)
+        y = 50 + math.sin(angle) * 45
+        brightness = 180 + 75 * math.sin(pygame.time.get_ticks() * 0.007 + i)
+        col = light_colors[i % len(light_colors)]
+        color = tuple(min(255, int(c * brightness/255)) for c in col)
+        pygame.draw.circle(screen, color, (int(x), int(y)), 5)
+        pygame.draw.circle(screen, (255,255,180), (int(x), int(y)), 2)
   
 
     # Tiny "Controls" text at bottom center
