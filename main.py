@@ -181,23 +181,27 @@ while running:
     #                                 text_rect.width+20, text_rect.height+6), 2)
     # screen.blit(merry_text, text_rect)
 
-  # REAL CURSIVE CHRISTMAS FONT — NO FILE NEEDED!
-    # Uses Google Fonts "Mountains of Christmas" directly from the web
-    try:
-        # This loads the real font from the internet — works perfectly on pygbag!
-        festive_big   = pygame.font.Font("https://cdn.jsdelivr.net/gh/googlefonts/mountains-of-christmas@master/fonts/MountainsofChristmas-Regular.ttf", 82)
-        festive_med   = pygame.font.Font("https://cdn.jsdelivr.net/gh/googlefonts/mountains-of-christmas@master/fonts/MountainsofChristmas-Regular.ttf", 64)
-        festive_small = pygame.font.Font("https://cdn.jsdelivr.net/gh/googlefonts/mountains-of-christmas@master/fonts/MountainsofChristmas-Regular.ttf", 50)
-    except:
-        # Instant fallback if internet blocked (never happens on GitHub Pages)
-        festive_big   = pygame.font.SysFont("comicsansms", 78, bold=True, italic=True)
-        festive_med   = pygame.font.SysFont("comicsansms", 62, bold=True)
-        festive_small = pygame.font.SysFont("comicsansms", 48)
+ # REAL TTF FONT WITH ERROR CHECKING
+font_path = os.path.join("assets", "reindeer_games.ttf")
+try:
+    print(f"Trying to load font from: {font_path}")  # Debug log (check browser console)
+    if os.path.exists(font_path):
+        christmas_font_big   = pygame.font.Font(font_path, 78)
+        christmas_font_med   = pygame.font.Font(font_path, 62)
+        christmas_font_small = pygame.font.Font(font_path, 48)
+        print("Font loaded successfully!")  # Confirm in console
+    else:
+        raise FileNotFoundError(f"Font not found at {font_path}")
+except Exception as e:
+    print(f"Font load failed: {e} — Using fallback")  # Shows in console
+    christmas_font_big   = pygame.font.SysFont("comicsansms", 78, bold=True, italic=True)
+    christmas_font_med   = pygame.font.SysFont("comicsansms", 62, bold=True)
+    christmas_font_small = pygame.font.SysFont("comicsansms", 48)
 
-    # "Merry Christmas" at top — REAL cursive!
-    title = festive_big.render("Merry Christmas", True, GOLD)
-    title_rect = title.get_rect(center=(WIDTH//2, 60))
-    screen.blit(title, title_rect)
+# Title — now the real cursive!
+title_surf = christmas_font_big.render("Merry Christmas", True, GOLD)
+title_rect = title_surf.get_rect(center=(WIDTH // 2, 60))
+screen.blit(title_surf, title_rect)
 
     
     # Twinkling lights around the title (same as before)
@@ -228,28 +232,32 @@ while running:
         screen.blit(over_text, over_text.get_rect(center=(WIDTH//2, HEIGHT//2-30)))
         screen.blit(font.render("Press R to Restart", True, WHITE), (WIDTH//2-150, HEIGHT//2+30))
 
-    # Victory screen — same gorgeous font!
-    elif victory:
-        lines = [
-            "Blitzen the Reindeer & You",
-            "Have Saved CHRISTMAS",
-            "from the Evil Grinch!",
-            "The Skies are Clear Again!"
-        ]
-        rendered = [
-            festive_med.render(lines[0], True, GOLD),
-            festive_med.render(lines[1], True, GOLD),
-            festive_small.render(lines[2], True, GOLD),
-            festive_small.render(lines[3], True, GOLD)
-        ]
-        y = HEIGHT//2 - 100
-        for surf in rendered:
-            rect = surf.get_rect(center=(WIDTH//2, y))
-            screen.blit(surf, rect)
-            y += surf.get_height() + 10
+   # Victory screen — same font
+elif victory:
+    lines = [
+        "Blitzen the Reindeer & You",
+        "Have Saved CHRISTMAS",
+        "from the Evil Grinch!",
+        "The Skies are Clear Again!"
+    ]
+    rendered = [
+        christmas_font_med.render(lines[0], True, GOLD),
+        christmas_font_med.render(lines[1], True, GOLD),
+        christmas_font_small.render(lines[2], True, GOLD),
+        christmas_font_small.render(lines[3], True, GOLD)
+    ]
+    y = HEIGHT // 2 - 100
+    for surf in rendered:
+        rect = surf.get_rect(center=(WIDTH // 2, y))
+        # Quick glow
+        glow = pygame.Surface((rect.width + 30, rect.height + 20), pygame.SRCALPHA)
+        pygame.draw.rect(glow, (255, 100, 100, 60), glow.get_rect())
+        screen.blit(glow, (rect.x - 15, rect.y - 10))
+        screen.blit(surf, rect)
+        y += surf.get_height() + 10
 
-        restart = festive_small.render("Press R to Save Christmas Again!", True, WHITE)
-        screen.blit(restart, restart.get_rect(center=(WIDTH//2, HEIGHT - 100)))
+    restart = christmas_font_small.render("Press R to Save Christmas Again!", True, WHITE)
+    screen.blit(restart, restart.get_rect(center=(WIDTH // 2, HEIGHT - 100)))
     
     # elif victory:
     #    win_text = big_font.render("Blitzen the Reindeer & You Have Saved CHRISTMAS from the Bad Grinch! The Skies are Clear!", True, GOLD)
