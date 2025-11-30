@@ -180,40 +180,35 @@ while running:
     # pygame.draw.rect(screen, WHITE, (text_rect.x-10, text_rect.y-3, 
     #                                 text_rect.width+20, text_rect.height+6), 2)
     # screen.blit(merry_text, text_rect)
-    
-        # REAL CHRISTMAS FONT + TWINKLING LIGHTS
+
+    # === REAL FESTIVE FONT FOR EVERYTHING ===
     try:
-        # Load the real festive font you just uploaded
-        festive_font = pygame.font.Font("assets/JandaChristmasDoodles.ttf", 68)
-        merry_surf = festive_font.render("Merry Christmas", True, GOLD)
+        christmas_font_big   = pygame.font.Font("assets/JandaChristmasDoodles.ttf", 72)  # Title
+        christmas_font_med   = pygame.font.Font("assets/JandaChristmasDoodles.ttf", 56)  # Victory main lines
+        christmas_font_small = pygame.font.Font("assets/JandaChristmasDoodles.ttf", 44)  # Victory small lines
     except:
-        # Fallback if something goes wrong
-        festive_font = pygame.font.SysFont("comicsansms", 52, bold=True, italic=True)
-        merry_surf = festive_font.render("Merry Christmas", True, GOLD)
+        # Fallback if something goes wrong (will never happen if file is there)
+        christmas_font_big   = pygame.font.SysFont("comicsansms", 72, bold=True, italic=True)
+        christmas_font_med   = pygame.font.SysFont("comicsansms", 56, bold=True)
+        christmas_font_small = pygame.font.SysFont("comicsansms", 44)
 
-    merry_rect = merry_surf.get_rect(center=(WIDTH // 2, 50))
+    # "Merry Christmas" at the top — now REAL cursive!
+    title_surf = christmas_font_big.render("Merry Christmas", True, GOLD)
+    title_rect = title_surf.get_rect(center=(WIDTH // 2, 60))
+    screen.blit(title_surf, title_rect)
 
-    # Soft glow
-    glow = pygame.Surface((merry_rect.width + 50, merry_rect.height + 40), pygame.SRCALPHA)
-    pygame.draw.rect(glow, (255, 240, 180, 60), glow.get_rect(), border_radius=25)
-    screen.blit(glow, (merry_rect.x - 25, merry_rect.y - 20))
-
-    # Draw the real cursive text
-    screen.blit(merry_surf, merry_rect)
-
-    # Twinkling lights (same as before — kept because you liked them!)
-    light_colors = [(255,0,0), (0,255,0), (255,215,0), (0,255,255), (255,100,200)]
+    # Twinkling lights around the title (same as before)
     for i in range(32):
-        angle = i * 0.196  # 32 points = perfect circle
+        angle = i * 0.196
         radius = 110 + 12 * math.sin(pygame.time.get_ticks() * 0.004 + i)
         x = WIDTH // 2 + math.cos(angle) * radius
-        y = 50 + math.sin(angle) * 45
+        y = 60 + math.sin(angle) * 45
         brightness = 180 + 75 * math.sin(pygame.time.get_ticks() * 0.007 + i)
-        col = light_colors[i % len(light_colors)]
+        col = [(255,0,0),(0,255,0),(255,215,0),(0,255,255),(255,100,200)][i%5]
         color = tuple(min(255, int(c * brightness/255)) for c in col)
         pygame.draw.circle(screen, color, (int(x), int(y)), 5)
-        pygame.draw.circle(screen, (255,255,180), (int(x), int(y)), 2)
-  
+
+     
 
     # Tiny "Controls" text at bottom center
     controls_text = font.render("← → Move    Space = Fire", True, (200, 200, 200))  # light gray
@@ -229,8 +224,9 @@ while running:
         over_text = big_font.render("GAME OVER", True, RED)
         screen.blit(over_text, over_text.get_rect(center=(WIDTH//2, HEIGHT//2-30)))
         screen.blit(font.render("Press R to Restart", True, WHITE), (WIDTH//2-150, HEIGHT//2+30))
+
+     # === VICTORY SCREEN WITH SAME FESTIVE FONT ===
     elif victory:
-        # Festive multi-line victory message
         lines = [
             "Blitzen the Reindeer & You",
             "Have Saved CHRISTMAS",
@@ -238,42 +234,38 @@ while running:
             "The Skies are Clear Again!"
         ]
 
-        # Use a nice bold festive font
-        victory_font = pygame.font.SysFont("comicsansms", 48, bold=True)
-        small_font   = pygame.font.SysFont("comicsansms", 32)
+        # Use the real Christmas font!
+        rendered = [
+            christmas_font_med.render(lines[0], True, GOLD),
+            christmas_font_med.render(lines[1], True, GOLD),
+            christmas_font_small.render(lines[2], True, GOLD),
+            christmas_font_small.render(lines[3], True, GOLD)
+        ]
 
-        # Render each line in GOLD
-        rendered_lines = [victory_font.render(line, True, GOLD) for line in lines[:2]]
-        rendered_lines += [small_font.render(line, True, GOLD) for line in lines[2:]]
+        total_h = sum(r.get_height() + 10 for r in rendered) - 10
+        y = HEIGHT // 2 - total_h // 2 - 30
 
-        # Center all lines vertically & horizontally
-        total_height = sum(line.get_height() + 8 for line in rendered_lines) - 8
-        y_start = HEIGHT // 2 - total_height // 2 - 40
+        for surf in rendered:
+            rect = surf.get_rect(center=(WIDTH // 2, y))
+            # Glow
+            glow = pygame.Surface((rect.width + 50, rect.height + 30), pygame.SRCALPHA)
+            pygame.draw.rect(glow, (255, 100, 100, 60), glow.get_rect(), border_radius=20)
+            screen.blit(glow, (rect.x - 25, rect.y - 15))
+            screen.blit(surf, rect)
+            y += surf.get_height() + 15
 
-        for i, line_surf in enumerate(rendered_lines):
-            line_rect = line_surf.get_rect(center=(WIDTH // 2, y_start + i * (line_surf.get_height() + 12)))
-            
-            # Optional: add a soft red/green glow behind each line
-            glow = pygame.Surface((line_rect.width + 40, line_rect.height + 20), pygame.SRCALPHA)
-            pygame.draw.rect(glow, (255, 50, 50, 40), glow.get_rect(), border_radius=15)
-            screen.blit(glow, (line_rect.x - 20, line_rect.y - 10))
-            
-            screen.blit(line_surf, line_rect)
+        # Victory stars
+        for _ in range(50):
+            a = random.random() * 6.28
+            d = 200 + random.randint(0, 100)
+            x = WIDTH // 2 + math.cos(a) * d
+            y = HEIGHT // 2 + math.sin(a) * d * 0.6
+            c = random.choice([(255,0,0),(0,255,0),(255,215,0),(255,255,255)])
+            pygame.draw.circle(screen, c, (int(x), int(y)), random.randint(2,5))
 
-        # Twinkling stars around the victory text
-        for _ in range(40):
-            angle = random.random() * 6.28
-            dist = 180 + random.randint(0, 80)
-            x = WIDTH // 2 + math.cos(angle) * dist
-            y = HEIGHT // 2 + math.sin(angle) * dist * 0.6
-            brightness = 150 + 100 * math.sin(pygame.time.get_ticks() * 0.01 + _)
-            color = (255, min(255, int(brightness)), 100) if _ % 2 else (min(255, int(brightness)), 255, 100)
-            pygame.draw.circle(screen, color, (int(x), int(y)), 3)
-
-        # Press R message (clean & centered)
-        restart_surf = font.render("Press R to Save Christmas Again!", True, WHITE)
-        restart_rect = restart_surf.get_rect(center=(WIDTH // 2, HEIGHT - 100))
-        screen.blit(restart_surf, restart_rect)
+        restart = christmas_font_small.render("Press R to Save Christmas Again!", True, WHITE)
+        screen.blit(restart, restart.get_rect(center=(WIDTH // 2, HEIGHT - 100)))
+       
     
     # elif victory:
     #    win_text = big_font.render("Blitzen the Reindeer & You Have Saved CHRISTMAS from the Bad Grinch! The Skies are Clear!", True, GOLD)
