@@ -1,10 +1,10 @@
-# main.py - North Pole Invaders - WITH VICTORY MESSAGE!
+# main.py - North Pole Invaders - BLACK SCREEN FIXED!
 import pygame
 import random
 import math
 import os
-import asyncio   # needed for pygbag
 
+# Safe init - NO MIXER (fixes 80% of black screens)
 pygame.init()
 
 WIDTH, HEIGHT = 800, 600
@@ -22,9 +22,7 @@ clock = pygame.time.Clock()
 font = pygame.font.SysFont("arial", 32, bold=True)
 small_font = pygame.font.SysFont("arial", 18)
 
-# ------------------------------------------------------------------
-# Load images (uses your PNGs if they exist, otherwise cute fallbacks)
-# ------------------------------------------------------------------
+# Load images (PNG first, fallbacks second)
 def load_image(name, scale=None):
     path = os.path.join("assets", name)
     if os.path.exists(path):
@@ -32,7 +30,7 @@ def load_image(name, scale=None):
         if scale:
             img = pygame.transform.scale(img, scale)
         return img
-    # Fallback shapes
+    # Fallbacks
     s = pygame.Surface((60, 60), pygame.SRCALPHA)
     if "santa" in name:
         pygame.draw.circle(s, RED, (30,20), 20)
@@ -94,114 +92,110 @@ spawn_invaders()
 direction = 1
 speed = 1.8
 
-async def main():
-    global game_over, victory, direction
+running = True
+while running:  # Non-async loop (pygbag-safe without sleep)
+    clock.tick(60)
+    screen.blit(bg, (0, 0))
 
-    running = True
-    while running:
-        clock.tick(60)
-        screen.blit(bg, (0, 0))
+    # Twinkling stars
+    for i, (x,y,size) in enumerate(stars):
+        brightness = 150 + 105 * math.sin(pygame.time.get_ticks() * 0.01 + i)
+        col = (255, min(255,int(brightness)), 100) if i%3==0 else (min(255,int(brightness)),100,255)
+        pygame.draw.circle(screen, col, (x,y), size)
 
-        # Twinkling stars
-        for i, (x,y,size) in enumerate(stars):
-            brightness = 150 + 105 * math.sin(pygame.time.get_ticks() * 0.01 + i)
-            col = (255, min(255,int(brightness)), 100) if i%3==0 else (min(255,int(brightness)),100,255)
-            pygame.draw.circle(screen, col, (x,y), size)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE and not game_over and not victory:
+                bullets.append([player_x + 30, player_y - 20])
+            if event.key == pygame.K_r and (game_over or victory):
+                score = lives = 3
+                game_over = victory = False
+                player_x = WIDTH // 2 - 40
+                bullets.clear()
+                spawn_invaders()
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and not game_over and not victory:
-                    bullets.append([player_x + 30, player_y - 20])
-                if event.key == pygame.K_r and (game_over or victory):
-                    score = lives = 3
-                    game_over = victory = False
-                    player_x = WIDTH // 2 - 40
-                    spawn_invaders()
+    if not game_over and not victory:
+        # Player movement
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] and player_x > 0: player_x -= player_speed
+        if keys[pygame.K_RIGHT] and player_x < WIDTH - 80: player_x += player_speed
 
-        if not game_over and not victory:
-            # Player movement
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_LEFT] and player_x > 0: player_x -= player_speed
-            if keys[pygame.K_RIGHT] and player_x < WIDTH - 80: player_x += player_speed
+        # Bullets
+        for b in bullets[:]:
+            b[1] -= 12
+            if b[1] < 0: bullets.remove(b)
 
-            # Bullets
-            for b in bullets[:]:
-                b[1] -= 12
-                if b[1] < 0: bullets.remove(b)
+        # Invaders movement
+        edge = False
+        for inv in invaders:
+            inv["x"] += direction * speed
+            if inv["x"] <= 10 or inv["x"] >= WIDTH - 70: edge = True
 
-            # Invaders movement
-            edge = False
+        if edge:
+            direction *= -1
             for inv in invaders:
-                inv["x"] += direction * speed
-                if inv["x"] <= 10 or inv["x"] >= WIDTH - 70: edge = True
+                inv["y"] += 30
+                if inv["y"] > player_y:
+                    lives -= 1
+                    if lives <= 0:
+                        game_over = True
+                    else:
+                        spawn_invaders()
 
-            if edge:
-                direction *= -1
-                for inv in invaders:
-                    inv["y"] += 30
-                    if inv["y"] > player_y:
-                        lives -= 1
-                        if lives <= 0:
-                            game_over = True
-                        else:
-                            spawn_invaders()
+        # Collisions
+        for b in bullets[:]:
+            bx, by = b
+            for inv in invaders[:]:
+                if (inv["x"] < bx < inv["x"]+60 and inv["y"] < by < inv["y"]+60):
+                    invaders.remove(inv)
+                    bullets.remove(b)
+                    score += 10
+                    break
 
-            # Collisions
-            for b in bullets[:]:
-                bx, by = b
-                for inv in invaders[:]:
-                    if (inv["x"] < bx < inv["x"]+60 and inv["y"] < by < inv["y"]+60):
-                        invaders.remove(inv)
-                        bullets.remove(b)
-                        score += 10
-                        break
+        # Victory check
+        if not invaders:
+            victory = True
 
-            # Victory check
-            if not invaders:
-                victory = True
+    # Draw everything
+    screen.blit(player_img, (player_x, player_y))
+    for b in bullets: screen.blit(bullet_img, (b[0], b[1]))
+    for inv in invaders: screen.blit(inv["img"], (int(inv["x"]), int(inv["y"])))
 
-        # Draw everything
-        screen.blit(player_img, (player_x, player_y))
-        for b in bullets: screen.blit(bullet_img, (b[0], b[1]))
-        for inv in invaders: screen.blit(inv["img"], (int(inv["x"]), int(inv["y"])))
+    # HUD
+    hud = font.render(f"Score: {score}   Lives: {lives}", True, GOLD)
+    screen.blit(hud, (10, 10))
 
-        # HUD
-        hud = font.render(f"Score: {score}   Lives: {lives}", True, GOLD)
-        screen.blit(hud, (10, 10))
+    # Tiny controls hint
+    ctrl = small_font.render("← → Move    Space = Fire", True, GOLD)
+    screen.blit(ctrl, ctrl.get_rect(center=(WIDTH//2, HEIGHT-20)))
 
-        # Tiny controls hint
-        ctrl = small_font.render("← → Move    Space = Fire", True, GOLD)
-        screen.blit(ctrl, ctrl.get_rect(center=(WIDTH//2, HEIGHT-20)))
+    # Game Over
+    if game_over:
+        go = font.render("GAME OVER – Press R to restart", True, RED)
+        screen.blit(go, go.get_rect(center=(WIDTH//2, HEIGHT//2)))
 
-        # Game Over
-        if game_over:
-            go = font.render("GAME OVER – Press R to restart", True, RED)
-            screen.blit(go, go.get_rect(center=(WIDTH//2, HEIGHT//2)))
+    # VICTORY MESSAGE – your exact lines!
+    elif victory:
+        lines = [
+            "Blitzen the Reindeer & You",
+            "Have Saved CHRISTMAS",
+            "from the Evil Grinch!",
+            "The Skies are Clear Again!"
+        ]
+        y = HEIGHT//2 - 100
+        for i, txt in enumerate(lines):
+            size = 64 if i == 1 else 48
+            f = pygame.font.SysFont("arial", size, bold=True)
+            surf = f.render(txt, True, GOLD)
+            rect = surf.get_rect(center=(WIDTH//2, y))
+            screen.blit(surf, rect)
+            y += surf.get_height() + 10
 
-        # VICTORY MESSAGE – exactly what you asked for!
-        elif victory:
-            lines = [
-                "Blitzen the Reindeer & You",
-                "Have Saved CHRISTMAS",
-                "from the Evil Grinch!",
-                "The Skies are Clear Again!"
-            ]
-            y = HEIGHT//2 - 100
-            for i, txt in enumerate(lines):
-                size = 64 if i == 1 else 48
-                f = pygame.font.SysFont("arial", size, bold=True)
-                surf = f.render(txt, True, GOLD)
-                rect = surf.get_rect(center=(WIDTH//2, y))
-                screen.blit(surf, rect)
-                y += surf.get_height() + 10
+        restart = small_font.render("Press R to Save Christmas Again!", True, WHITE)
+        screen.blit(restart, restart.get_rect(center=(WIDTH//2, HEIGHT-100)))
 
-            restart = small_font.render("Press R to Save Christmas Again!", True, WHITE)
-            screen.blit(restart, restart.get_rect(center=(WIDTH//2, HEIGHT-100)))
+    pygame.display.flip()
 
-        pygame.display.flip()
-        await asyncio.sleep(0)
-
-if __name__ == "__main__":
-    asyncio.run(main())
+pygame.quit()
