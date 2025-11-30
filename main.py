@@ -1,4 +1,4 @@
-# main.py - North Pole Invaders - PERFECTLY PLAYABLE!
+# main.py - North Pole Invaders - SMOOTH & PERFECT!
 import pygame
 import random
 import math
@@ -23,7 +23,7 @@ clock = pygame.time.Clock()
 font = pygame.font.SysFont("comicsansms", 36)
 big_font = pygame.font.SysFont("comicsansms", 72, bold=True)
 
-# ALL GLOBALS FIRST! (CRASH FIX)
+# ALL GLOBALS FIRST!
 invaders = []
 bullets = []
 score = 0
@@ -31,11 +31,11 @@ lives = 3
 game_over = False
 victory = False
 invader_direction = 1
-player_x = WIDTH // 2 - 40
+player_x = float(WIDTH // 2 - 40)
 player_y = HEIGHT - 100
-player_speed = 8
+player_speed = 8.0
 bullet_speed = 12
-invader_speed = 1  # 2.5 IS FAST NOW!
+invader_speed = 1.5  # SMOOTH FLOAT NOW!
 invader_drop = 25
 
 def load_image(name, scale=None):
@@ -80,19 +80,19 @@ def reset_invaders():
     for row in range(5):
         for col in range(10):
             img = invader_images[row]
-            x = 30 + col * 65
-            y = 80 + row * 75
-            rect = img.get_rect(topleft=(x, y))
-            invaders.append({"rect": rect, "img": img, "type": row})
+            x = 30.0 + col * 65.0
+            y = 80.0 + row * 75.0
+            rect = pygame.Rect(x, y, img.get_width(), img.get_height())
+            invaders.append({"x": x, "y": y, "rect": rect, "img": img, "type": row})
     invader_direction = 1
 
 def reset_game():
     global score, lives, game_over, victory, bullets, player_x, invaders, invader_direction
     score = 0; lives = 3; game_over = False; victory = False
-    bullets.clear(); player_x = WIDTH//2 - 40
+    bullets.clear(); player_x = float(WIDTH//2 - 40)
     reset_invaders()
 
-reset_game()  # NOW SAFE!
+reset_game()
 
 try:
     shoot_sound = pygame.mixer.Sound(os.path.join("assets", "twinkling.wav"))
@@ -104,7 +104,7 @@ while running:
     clock.tick(60)
     screen.blit(background, (0,0))
 
-    # Twinkling
+    # Twinkling stars
     for i, (x,y,size) in enumerate(stars):
         brightness = 150 + 105 * math.sin(pygame.time.get_ticks() * 0.01 + i)
         color = (255, min(255,int(brightness)), 100) if i%3==0 else (min(255,int(brightness)),100,255)
@@ -113,82 +113,4 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE and not game_over and not victory:
-                bullets.append(pygame.Rect(player_x + 35, player_y, 20, 30))
-                if shoot_sound: shoot_sound.play()
-            if event.key == pygame.K_r and (game_over or victory): reset_game()
-
-    if not game_over and not victory:
-        # Player
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and player_x > 0: player_x -= player_speed
-        if keys[pygame.K_RIGHT] and player_x < WIDTH - 80: player_x += player_speed
-
-        # Bullets
-        for b in bullets[:]:
-            b.y -= bullet_speed
-            if b.y < 0: bullets.remove(b)
-
-        # INVADERS MARCH!
-        move_down = False
-        for inv in invaders:
-            inv["rect"].x += invader_direction * invader_speed
-            if inv["rect"].right >= WIDTH or inv["rect"].left <= 0: move_down = True
-
-        if move_down:
-            invader_direction *= -1
-            lost_life = False
-            for inv in invaders:
-                inv["rect"].y += invader_drop
-                if inv["rect"].top > player_y: lost_life = True
-            if lost_life:
-                lives -= 1
-                if lives <= 0: game_over = True
-                else: reset_invaders()
-
-        # Collisions (optimized)
-        for b in bullets[:]:
-            for inv in invaders[:]:
-                if b.colliderect(inv["rect"]):
-                    invaders.remove(inv)
-                    bullets.remove(b)
-                    score += 10 if inv["type"] < 4 else 50
-                    break
-            else: continue
-            break
-
-        if len(invaders) == 0: victory = True
-
-    # Draw
-    screen.blit(player_img, (player_x, player_y))
-    for b in bullets: screen.blit(bullet_img, (b.x, b.y))
-    for inv in invaders: screen.blit(inv["img"], inv["rect"])
-
-    # UI + DEBUG (proves movement!)
-    score_text = font.render(f"Score: {score}", True, GOLD)
-    lives_text = font.render(f"Lives: {lives}", True, RED)
-    debug_text = font.render(f"Invaders: {len(invaders)} | Speed: {invader_speed}", True, WHITE)
-    screen.blit(score_text, (10,10))
-    screen.blit(lives_text, (WIDTH-200,10))
-    screen.blit(debug_text, (10,50))
-
-    # Merry Christmas (MOVED UP - NO COVER!)
-    merry_text = big_font.render("Merry Christmas!", True, GOLD)
-    text_rect = merry_text.get_rect(center=(WIDTH//1, HEIGHT - 20))  # FIXED!
-    pygame.draw.rect(screen, DARK_GREEN, (text_rect.x-20, text_rect.y-10, text_rect.width+20, text_rect.height+10))
-    pygame.draw.rect(screen, WHITE, (text_rect.x-15, text_rect.y-5, text_rect.width+20, text_rect.height+5), 2)
-    screen.blit(merry_text, text_rect)
-
-    # Overlays
-    if game_over:
-        over_text = big_font.render("GAME OVER", True, RED)
-        screen.blit(over_text, over_text.get_rect(center=(WIDTH//2, HEIGHT//2-30)))
-        screen.blit(font.render("Press R to Restart", True, WHITE), (WIDTH//2-150, HEIGHT//2+30))
-    elif victory:
-        win_text = big_font.render("YOU SAVED CHRISTMAS!", True, GOLD)
-        screen.blit(win_text, win_text.get_rect(center=(WIDTH//2, HEIGHT//2-30)))
-        screen.blit(font.render("Press R for More!", True, WHITE), (WIDTH//2-150, HEIGHT//2+30))
-
-    pygame.display.flip()
-
-pygame.quit()
+            if event.key == pygame.K_SPACE and not
