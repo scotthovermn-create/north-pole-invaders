@@ -97,7 +97,14 @@ def reset_invaders():
 player_x = WIDTH // 2 - 40
 player_y = HEIGHT - 100
 player_speed = 8
-
+# Global game state (REQUIRED FIX!)
+invaders = []
+bullets = []
+score = 0
+lives = 3
+game_over = False
+victory = False
+invader_direction = 1
 # Game state
 def reset_game():
     global score, lives, game_over, victory, bullets, player_x, invaders, invader_direction
@@ -112,11 +119,11 @@ def reset_game():
 reset_game()  # Initial setup
 
 # Movement vars
-bullets = []
+# bullets = []
 bullet_speed = 12
 invader_speed = 0.8
 invader_drop = 25
-invader_direction = 1
+# invader_direction = 1
 
 # Sound (optional)
 try:
