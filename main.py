@@ -1,124 +1,107 @@
-# main.py - North Pole Invaders - PERFECTLY PLAYABLE!
+# main.py - North Pole Invaders - SIMPLE & BULLETPROOF
 import pygame
 import random
 import math
-import os
 
 pygame.init()
-pygame.mixer.init()
 
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("North Pole Invaders")
 
 # Colors
-GREEN = (0, 180, 0)
-RED = (200, 0, 0)
+RED = (220, 20, 60)
+GREEN = (0, 200, 0)
 GOLD = (255, 215, 0)
 WHITE = (255, 255, 255)
-DARK_GREEN = (0, 100, 0)
-NIGHT_BLUE = (5, 20, 50)
+BLUE = (5, 20, 50)
 
 clock = pygame.time.Clock()
-font = pygame.font.SysFont("comicsansms", 36)
-big_font = pygame.font.SysFont("comicsansms", 72, bold=True)
+font = pygame.font.SysFont("arial", 32, bold=True)
 
-# ALL GLOBALS FIRST! (CRASH FIX)
-invaders = []
+# Game vars
+player_x = WIDTH // 2 - 40
+player_y = HEIGHT - 100
+player_speed = 7
+
 bullets = []
+invaders = []
 score = 0
 lives = 3
 game_over = False
-victory = False
-invader_direction = 1
-player_x = WIDTH // 2 - 40
-player_y = HEIGHT - 100
-player_speed = 8
-bullet_speed = 10
-invader_speed = 1  # SLOW WAS 2.5 FAST NOW!
-invader_drop = 25
 
-def load_image(name, scale=None):
-    path = os.path.join("assets", name)
-    if not os.path.exists(path):
-        img = pygame.Surface((60, 60), pygame.SRCALPHA)
-        if "santa" in name:
-            pygame.draw.circle(img, RED, (30, 20), 20); pygame.draw.rect(img, WHITE, (20, 35, 20, 25))
-        elif "reindeer" in name:
-            pygame.draw.polygon(img, (139, 69, 19), [(30,10),(20,30),(40,30)]); pygame.draw.circle(img, (139, 69, 19), (30, 40), 20)
-        elif "tree" in name:
-            pygame.draw.polygon(img, GREEN, [(30,10),(10,50),(50,50)]); pygame.draw.rect(img, (139, 69, 19), (25, 50, 10, 20))
-        elif "snowman" in name:
-            pygame.draw.circle(img, WHITE, (30, 20), 15); pygame.draw.circle(img, WHITE, (30, 45), 20)
-        elif "sleigh" in name:
-            pygame.draw.polygon(img, RED, [(10,40),(50,30),(70,50),(10,50)])
-        elif "gift" in name:
-            pygame.draw.rect(img, RED, (10, 10, 40, 40)); pygame.draw.rect(img, GOLD, (25, 5, 10, 50))
-        return img
-    img = pygame.image.load(path).convert_alpha()
-    if scale: img = pygame.transform.scale(img, scale)
-    return img
+# Simple sprites (no files needed)
+def make_sprite(color, shape):
+    s = pygame.Surface((60, 60), pygame.SRCALPHA)
+    if shape == "tree":
+        pygame.draw.polygon(s, GREEN, [(30,5),(10,55),(50,55)])
+        pygame.draw.rect(s, (139,69,19), (25,50,10,15))
+    elif shape == "snowman":
+        pygame.draw.circle(s, WHITE, (30,20), 18)
+        pygame.draw.circle(s, WHITE, (30,50), 22)
+    elif shape == "reindeer":
+        pygame.draw.ellipse(s, (139,69,19), (15,10,30,30))
+    elif shape == "santa":
+        pygame.draw.circle(s, RED, (30,20), 20)
+        pygame.draw.rect(s, RED, (15,35,30,25))
+    elif shape == "sleigh":
+        pygame.draw.polygon(s, RED, [(0,30),(70,20),(80,50),(0,50)])
+    elif shape == "gift":
+        pygame.draw.rect(s, GOLD, (0,0,20,30))
+    return s
 
-# Load assets
-santa_img = load_image("santa.png", (60, 60))
-reindeer_img = load_image("reindeer.png", (70, 60))
-tree_img = load_image("tree.png", (60, 70))
-snowman_img = load_image("snowman.png", (60, 70))
-player_img = load_image("player_sleigh.png", (80, 60))
-bullet_img = load_image("gift.png", (20, 30))
-invader_images = [tree_img, snowman_img, reindeer_img, santa_img, santa_img]
+player_img = make_sprite(RED, "sleigh")
+bullet_img = make_sprite(GOLD, "gift")
+tree_img = make_sprite(GREEN, "tree")
+snowman_img = make_sprite(WHITE, "snowman")
+reindeer_img = make_sprite((139,69,19), "reindeer")
+santa_img = make_sprite(RED, "santa")
 
-# Background & stars
-background = pygame.Surface((WIDTH, HEIGHT))
-background.fill(NIGHT_BLUE)
-for _ in range(200): pygame.draw.circle(background, WHITE, (random.randint(0,WIDTH), random.randint(0,HEIGHT)), random.randint(1,3))
-stars = [(random.randint(0,WIDTH), random.randint(0,100), random.randint(1,3)) for _ in range(80)]
+invader_imgs = [tree_img, snowman_img, reindeer_img, santa_img, santa_img]
 
-def reset_invaders():
-    global invaders, invader_direction
-    invaders.clear()
+# Background with twinkles
+bg = pygame.Surface((WIDTH, HEIGHT))
+bg.fill(BLUE)
+stars = [(random.randint(0,WIDTH), random.randint(0,HEIGHT), random.randint(1,3)) for _ in range(150)]
+
+def spawn_invaders():
+    global invaders
+    invaders = []
     for row in range(5):
         for col in range(10):
-            img = invader_images[row]
-            x = 30 + col * 65
-            y = 80 + row * 75
-            rect = img.get_rect(topleft=(x, y))
-            invaders.append({"rect": rect, "img": img, "type": row})
-    invader_direction = 1
+            x = 70 + col * 70
+            y = 60 + row * 70
+            invaders.append({"x": float(x), "y": float(y), "img": invader_imgs[row], "type": row})
 
-def reset_game():
-    global score, lives, game_over, victory, bullets, player_x, invaders, invader_direction
-    score = 0; lives = 3; game_over = False; victory = False
-    bullets.clear(); player_x = WIDTH//2 - 40
-    reset_invaders()
-
-reset_game()  # NOW SAFE!
-
-try:
-    shoot_sound = pygame.mixer.Sound(os.path.join("assets", "twinkling.wav"))
-    shoot_sound.set_volume(0.3)
-except: shoot_sound = None
+spawn_invaders()
+direction = 1
+speed = 1.8
 
 running = True
 while running:
     clock.tick(60)
-    screen.blit(background, (0,0))
+    screen.blit(bg, (0, 0))
 
-    # Twinkling
-    for i, (x,y,size) in enumerate(stars):
+    # Twinkling stars
+    for i, (x, y, size) in enumerate(stars):
         brightness = 150 + 105 * math.sin(pygame.time.get_ticks() * 0.01 + i)
-        color = (255, min(255,int(brightness)), 100) if i%3==0 else (min(255,int(brightness)),100,255)
-        pygame.draw.circle(screen, color, (x,y), size)
+        color = (255, min(255, int(brightness)), 100) if i % 3 == 0 else (min(255, int(brightness)), 100, 255)
+        pygame.draw.circle(screen, color, (x, y), size)
 
     for event in pygame.event.get():
-        if event.type == pygame.QUIT: running = False
+        if event.type == pygame.QUIT:
+            running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE and not game_over and not victory:
-                bullets.append(pygame.Rect(player_x + 35, player_y, 20, 30))
-                if shoot_sound: shoot_sound.play()
-            if event.key == pygame.K_r and (game_over or victory): reset_game()
+            if event.key == pygame.K_SPACE and not game_over:
+                bullets.append([player_x + 30, player_y - 20])
+            if event.key == pygame.K_r and game_over:
+                score = 0
+                lives = 3
+                game_over = False
+                player_x = WIDTH // 2 - 40
+                spawn_invaders()
 
-    if not game_over and not victory:
+    if not game_over:
         # Player
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] and player_x > 0: player_x -= player_speed
@@ -126,143 +109,51 @@ while running:
 
         # Bullets
         for b in bullets[:]:
-            b.y -= bullet_speed
-            if b.y < 0: bullets.remove(b)
+            b[1] -= 10
+            if b[1] < 0: bullets.remove(b)
 
-        # INVADERS MARCH!
-        move_down = False
+        # Invaders
+        edge = False
         for inv in invaders:
-            inv["rect"].x += invader_direction * invader_speed
-            if inv["rect"].right >= WIDTH or inv["rect"].left <= 0: move_down = True
+            inv["x"] += direction * speed
+            if inv["x"] <= 10 or inv["x"] >= WIDTH - 70: edge = True
 
-        if move_down:
-            invader_direction *= -1
-            lost_life = False
+        if edge:
+            direction *= -1
             for inv in invaders:
-                inv["rect"].y += invader_drop
-                if inv["rect"].top > player_y: lost_life = True
-            if lost_life:
-                lives -= 1
-                if lives <= 0: game_over = True
-                else: reset_invaders()
+                inv["y"] += 30
+                if inv["y"] > player_y:
+                    lives -= 1
+                    if lives <= 0:
+                        game_over = True
+                    else:
+                        spawn_invaders()
 
-        # Collisions (optimized)
+        # Collisions
         for b in bullets[:]:
+            bx, by = b
             for inv in invaders[:]:
-                if b.colliderect(inv["rect"]):
+                if (inv["x"] < bx < inv["x"]+60 and inv["y"] < by < inv["y"]+60):
                     invaders.remove(inv)
                     bullets.remove(b)
-                    score += 10 if inv["type"] < 4 else 50
+                    score += 10
                     break
-            else: continue
-            break
 
-        if len(invaders) == 0: victory = True
+        if not invaders:
+            spawn_invaders()
 
     # Draw
     screen.blit(player_img, (player_x, player_y))
-    for b in bullets: screen.blit(bullet_img, (b.x, b.y))
-    for inv in invaders: screen.blit(inv["img"], inv["rect"])
+    for b in bullets: screen.blit(bullet_img, (b[0], b[1]))
+    for inv in invaders: screen.blit(inv["img"], (int(inv["x"]), int(inv["y"])))
 
-    # UI + DEBUG (proves movement!)
-    score_text = font.render(f"Score: {score}", True, GOLD)
-    lives_text = font.render(f"Lives: {lives}", True, RED)
-    debug_text = font.render(f"Invaders: {len(invaders)} | Speed: {invader_speed}", True, WHITE)
-    screen.blit(score_text, (10,10))
-    screen.blit(lives_text, (WIDTH-200,10))
-    screen.blit(debug_text, (10,50))
+    # HUD
+    hud = font.render(f"Score: {score}  Lives: {lives}", True, GOLD)
+    screen.blit(hud, (10, 10))
 
-    # "Merry Christmas" at the TOP of the screen
-    # merry_text = font.render("Merry Christmas", True, GOLD)                    # uses normal 36pt font
-    # text_rect = merry_text.get_rect(center=(WIDTH // 2, 40))                  # 40 pixels from top
-    # pygame.draw.rect(screen, DARK_GREEN, (text_rect.x-15, text_rect.y-8, 
-    #                                      text_rect.width+30, text_rect.height+16))
-    # pygame.draw.rect(screen, WHITE, (text_rect.x-10, text_rect.y-3, 
-    #                                 text_rect.width+20, text_rect.height+6), 2)
-    # screen.blit(merry_text, text_rect)
-
- # REAL TTF FONT WITH ERROR CHECKING
-font_path = os.path.join("assets", "reindeer_games.ttf")
-try:
-    print(f"Trying to load font from: {font_path}")  # Debug log (check browser console)
-    if os.path.exists(font_path):
-        christmas_font_big   = pygame.font.Font(font_path, 78)
-        christmas_font_med   = pygame.font.Font(font_path, 62)
-        christmas_font_small = pygame.font.Font(font_path, 48)
-        print("Font loaded successfully!")  # Confirm in console
-    else:
-        raise FileNotFoundError(f"Font not found at {font_path}")
-except Exception as e:
-    print(f"Font load failed: {e} — Using fallback")  # Shows in console
-    christmas_font_big   = pygame.font.SysFont("comicsansms", 78, bold=True, italic=True)
-    christmas_font_med   = pygame.font.SysFont("comicsansms", 62, bold=True)
-    christmas_font_small = pygame.font.SysFont("comicsansms", 48)
-
-# Title — now the real cursive!
-title_surf = christmas_font_big.render("Merry Christmas", True, GOLD)
-title_rect = title_surf.get_rect(center=(WIDTH // 2, 60))
-screen.blit(title_surf, title_rect)
-
-    
-    # Twinkling lights around the title (same as before)
-    for i in range(32):
-        angle = i * 0.196
-        radius = 110 + 12 * math.sin(pygame.time.get_ticks() * 0.004 + i)
-        x = WIDTH // 2 + math.cos(angle) * radius
-        y = 60 + math.sin(angle) * 45
-        brightness = 180 + 75 * math.sin(pygame.time.get_ticks() * 0.007 + i)
-        col = [(255,0,0),(0,255,0),(255,215,0),(0,255,255),(255,100,200)][i%5]
-        color = tuple(min(255, int(c * brightness/255)) for c in col)
-        pygame.draw.circle(screen, color, (int(x), int(y)), 5)
-
-     
-
-    # Tiny "Controls" text at bottom center
-    controls_text = font.render("← → Move    Space = Fire", True, (200, 200, 200))  # light gray
-    # Make it much smaller
-    small_font = pygame.font.SysFont("arial", 18, bold=False)   # 18pt = very small
-    controls_surf = small_font.render("← → Move    Space = Fire", True, (220, 220, 220))
-    
-    controls_rect = controls_surf.get_rect(center=(WIDTH // 2, HEIGHT - 20))  # 20px from bottom
-    screen.blit(controls_surf, controls_rect)
-    
-    # Overlays
     if game_over:
-        over_text = big_font.render("GAME OVER", True, RED)
-        screen.blit(over_text, over_text.get_rect(center=(WIDTH//2, HEIGHT//2-30)))
-        screen.blit(font.render("Press R to Restart", True, WHITE), (WIDTH//2-150, HEIGHT//2+30))
-
-   # Victory screen — same font
-elif victory:
-    lines = [
-        "Blitzen the Reindeer & You",
-        "Have Saved CHRISTMAS",
-        "from the Evil Grinch!",
-        "The Skies are Clear Again!"
-    ]
-    rendered = [
-        christmas_font_med.render(lines[0], True, GOLD),
-        christmas_font_med.render(lines[1], True, GOLD),
-        christmas_font_small.render(lines[2], True, GOLD),
-        christmas_font_small.render(lines[3], True, GOLD)
-    ]
-    y = HEIGHT // 2 - 100
-    for surf in rendered:
-        rect = surf.get_rect(center=(WIDTH // 2, y))
-        # Quick glow
-        glow = pygame.Surface((rect.width + 30, rect.height + 20), pygame.SRCALPHA)
-        pygame.draw.rect(glow, (255, 100, 100, 60), glow.get_rect())
-        screen.blit(glow, (rect.x - 15, rect.y - 10))
-        screen.blit(surf, rect)
-        y += surf.get_height() + 10
-
-    restart = christmas_font_small.render("Press R to Save Christmas Again!", True, WHITE)
-    screen.blit(restart, restart.get_rect(center=(WIDTH // 2, HEIGHT - 100)))
-    
-    # elif victory:
-    #    win_text = big_font.render("Blitzen the Reindeer & You Have Saved CHRISTMAS from the Bad Grinch! The Skies are Clear!", True, GOLD)
-    #    screen.blit(win_text, win_text.get_rect(center=(WIDTH//2, HEIGHT//2-30)))
-    #    screen.blit(font.render("Press R for More!", True, WHITE), (WIDTH//2-150, HEIGHT//2+30))
+        go = font.render("GAME OVER - Press R to restart", True, RED)
+        screen.blit(go, (WIDTH//2 - go.get_width()//2, HEIGHT//2))
 
     pygame.display.flip()
 
