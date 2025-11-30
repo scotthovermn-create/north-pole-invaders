@@ -168,15 +168,15 @@ while running:
         go = font.render("GAME OVER - Press R to restart", True, RED)
         screen.blit(go, (WIDTH//2 - go.get_width()//2, HEIGHT//2))
 
-    pygame.display.flip()
-    
-    # Tiny "Controls" text at bottom center
-    controls_text = font.render("← → Move    Space = Fire", True, (200, 200, 200))  # light gray
-    # Make it much smaller
-    small_font = pygame.font.SysFont("arial", 18, bold=False)   # 18pt = very small
-    controls_surf = small_font.render("← → Move    Space = Fire", True, (220, 220, 220))
+        
+    # Tiny "Controls" text at bottom center (festive gold tint)
+    small_font = pygame.font.SysFont("arial", 18, bold=False)  # Very small
+    controls_surf = small_font.render("← → Move    Space = Fire", True, GOLD)  # Gold for Christmas vibe
     
     controls_rect = controls_surf.get_rect(center=(WIDTH // 2, HEIGHT - 20))  # 20px from bottom
     screen.blit(controls_surf, controls_rect)
+    
+    pygame.display.flip()  
+  
 
 pygame.quit()
