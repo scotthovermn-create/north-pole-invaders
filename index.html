@@ -1,52 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8">
-    <title>North Pole Invaders - Debug Mode</title>
+    <title>North Pole Invaders</title>
     <style>
-        body { 
-            margin: 0; 
-            background: #333; /* Grey fallback */
-            overflow: hidden; 
-            font-family: Arial, sans-serif;
-        }
-        #pgb { 
-            width: 100vw; 
-            height: 100vh; 
-            display: block; 
-            image-rendering: pixelated; /* Crisp retro look */
-        }
-        .loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 100;
-            color: #FFD700;
-        }
-        .error {
-            color: red;
-            font-size: 18px;
-        }
+        body { margin:0; background:#000; overflow:hidden; }
+        canvas { image-rendering: pixelated; }
     </style>
 </head>
 <body>
-    <div class="loading">Loading North Pole Invaders... (Check browser console for debug info! 🎄)</div>
-    <div id="pgb"></div>
-    <script src="https://cdn.jsdelivr.net/pygbag/latest/pygbag.min.js"></script>
-    <script>
-        pygbag.main({ 
-            url: "main.py",
-            fullscreen: false,
-            scale: 1.0,
-            debug: true  // ← Enables console logs for errors/crashes
-        }).then(() => {
-            document.querySelector('.loading').style.display = 'none';
-        }).catch(err => {
-            document.querySelector('.loading').innerHTML += '<div class="error">Error: ' + err + '</div>';
-            console.error('Pygbag Error:', err);
-        });
-    </script>
+<script src="https://cdn.jsdelivr.net/pygbag/latest/pygbag.min.js"></script>
+<script>
+    pygbag.main({ url: "main.py", fullscreen: false });
+</script>
 </body>
 </html>
