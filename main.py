@@ -173,20 +173,47 @@ while running:
     screen.blit(debug_text, (10,50))
 
     # "Merry Christmas" at the TOP of the screen
-    merry_text = font.render("Merry Christmas", True, GOLD)                    # uses normal 36pt font
-    text_rect = merry_text.get_rect(center=(WIDTH // 2, 40))                  # 40 pixels from top
-    pygame.draw.rect(screen, DARK_GREEN, (text_rect.x-15, text_rect.y-8, 
-                                          text_rect.width+30, text_rect.height+16))
-    pygame.draw.rect(screen, WHITE, (text_rect.x-10, text_rect.y-3, 
-                                     text_rect.width+20, text_rect.height+6), 2)
-    screen.blit(merry_text, text_rect)
+    # merry_text = font.render("Merry Christmas", True, GOLD)                    # uses normal 36pt font
+    # text_rect = merry_text.get_rect(center=(WIDTH // 2, 40))                  # 40 pixels from top
+    # pygame.draw.rect(screen, DARK_GREEN, (text_rect.x-15, text_rect.y-8, 
+    #                                      text_rect.width+30, text_rect.height+16))
+    # pygame.draw.rect(screen, WHITE, (text_rect.x-10, text_rect.y-3, 
+    #                                 text_rect.width+20, text_rect.height+6), 2)
+    # screen.blit(merry_text, text_rect)
     
-    # "Merry Christmas" on the LEFT side
-    # merry_left = font.render("Merry Christmas", True, GOLD)
-    # left_rect = merry_left.get_rect(midleft=(20, HEIGHT - 50))
-    # pygame.draw.rect(screen, DARK_GREEN, (left_rect.x-10, left_rect.y-5, left_rect.width+20, left_rect.height+10))
-    # pygame.draw.rect(screen, WHITE, (left_rect.x-5, left_rect.y, left_rect.width+10, left_rect.height), 2)
-    # screen.blit(merry_left, left_rect)
+       # FESTIVE CURSIVE "Merry Christmas" WITH TWINKLING LIGHTS
+    try:
+        # Try a real cursive font first (looks amazing if available)
+        festive_font = pygame.font.SysFont("Brush Script MT, Lucida Handwriting, cursive", 48, bold=True)
+    except:
+        # Fallback to built-in with italic+bold for cursive feel
+        festive_font = pygame.font.SysFont("comicsansms", 52, bold=True, italic=True)
+
+    merry_surf = festive_font.render("Merry Christmas", True, GOLD)
+    merry_rect = merry_surf.get_rect(center=(WIDTH // 2, 50))
+
+    # Draw soft glow behind text
+    glow = pygame.Surface((merry_rect.width + 40, merry_rect.height + 30), pygame.SRCALPHA)
+    pygame.draw.rect(glow, (255, 220, 100, 50), (0, 0, glow.get_width(), glow.get_height()), border_radius=20)
+    screen.blit(glow, (merry_rect.x - 20, merry_rect.y - 15))
+
+    # Draw text
+    screen.blit(merry_surf, merry_rect)
+
+    # Twinkling Christmas lights around it
+    light_colors = [(255,0,0), (0,255,0), (255,255,0), (0,255,255), (255,100,255)]
+    for i in range(30):
+        angle = i / 30 * 3.14159 * 2
+        radius = 100 + 15 * math.sin(pygame.time.get_ticks() * 0.003 + i)
+        x = WIDTH // 2 + math.cos(angle) * radius
+        y = 50 + math.sin(angle) * 40
+        brightness = 180 + 75 * math.sin(pygame.time.get_ticks() * 0.008 + i)
+        color = light_colors[i % len(light_colors)]
+        color = (min(255, int(color[0] * brightness/255)), 
+                 min(255, int(color[1] * brightness/255)), 
+                 min(255, int(color[2] * brightness/255)))
+        pygame.draw.circle(screen, color, (int(x), int(y)), 4)
+        pygame.draw.circle(screen, (255,255,200), (int(x), int(y)), 2)
   
 
     # Tiny "Controls" text at bottom center
@@ -204,7 +231,7 @@ while running:
         screen.blit(over_text, over_text.get_rect(center=(WIDTH//2, HEIGHT//2-30)))
         screen.blit(font.render("Press R to Restart", True, WHITE), (WIDTH//2-150, HEIGHT//2+30))
     elif victory:
-        win_text = big_font.render("YOU SAVED CHRISTMAS!", True, GOLD)
+        win_text = big_font.render("Blitzen the Reindeer & You Have Saved CHRISTMAS from the Bad Grinch! The Skies are Clear!", True, GOLD)
         screen.blit(win_text, win_text.get_rect(center=(WIDTH//2, HEIGHT//2-30)))
         screen.blit(font.render("Press R for More!", True, WHITE), (WIDTH//2-150, HEIGHT//2+30))
 
