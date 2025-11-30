@@ -34,8 +34,8 @@ invader_direction = 1
 player_x = WIDTH // 2 - 40
 player_y = HEIGHT - 100
 player_speed = 8
-bullet_speed = 12
-invader_speed = .5  # SLOW WAS 2.5 FAST NOW!
+bullet_speed = 10
+invader_speed = 1  # SLOW WAS 2.5 FAST NOW!
 invader_drop = 25
 
 def load_image(name, scale=None):
@@ -172,12 +172,27 @@ while running:
     screen.blit(lives_text, (WIDTH-200,10))
     screen.blit(debug_text, (10,50))
 
-    # Merry Christmas (MOVED UP - NO COVER!)
-    merry_text = font.render("Merry Christmas!", True, GOLD)
-    text_rect = merry_text.get_rect(center=(WIDTH//1, HEIGHT - 40))  # FIXED!
-    pygame.draw.rect(screen, DARK_GREEN, (text_rect.x-20, text_rect.y-10, text_rect.width+20, text_rect.height+10))
-    pygame.draw.rect(screen, WHITE, (text_rect.x-15, text_rect.y-5, text_rect.width+30, text_rect.height+10), 2)
-    screen.blit(merry_text, text_rect)
+      # "Merry" on the LEFT side
+    merry_left = font.render("Merry", True, GOLD)
+    left_rect = merry_left.get_rect(midleft=(20, HEIGHT - 50))
+    pygame.draw.rect(screen, DARK_GREEN, (left_rect.x-10, left_rect.y-5, left_rect.width+20, left_rect.height+10))
+    pygame.draw.rect(screen, WHITE, (left_rect.x-5, left_rect.y, left_rect.width+10, left_rect.height), 2)
+    screen.blit(merry_left, left_rect)
+
+    # "Christmas!" on the RIGHT side
+    merry_right = font.render("Christmas!", True, GOLD)
+    right_rect = merry_right.get_rect(midright=(WIDTH-20, HEIGHT - 50))
+    pygame.draw.rect(screen, DARK_GREEN, (right_rect.x-10, right_rect.y-5, right_rect.width+20, right_rect.height+10))
+    pygame.draw.rect(screen, WHITE, (right_rect.x-5, right_rect.y, right_rect.width+10, right_rect.height), 2)
+    screen.blit(merry_right, right_rect)  
+    
+    
+    # #Merry Christmas (MOVED UP - NO COVER! OLD CODE BOTTOM OF SCREEN)
+    # merry_text = font.render("Merry Christmas!", True, GOLD)
+    # text_rect = merry_text.get_rect(center=(WIDTH//2, HEIGHT - 40))  # FIXED!
+    # pygame.draw.rect(screen, DARK_GREEN, (text_rect.x-20, text_rect.y-10, text_rect.width+20, text_rect.height+10))
+    # pygame.draw.rect(screen, WHITE, (text_rect.x-15, text_rect.y-5, text_rect.width+30, text_rect.height+10), 2)
+    # screen.blit(merry_text, text_rect)
 
     # Overlays
     if game_over:
