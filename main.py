@@ -172,33 +172,32 @@ while running:
     screen.blit(lives_text, (WIDTH-200,10))
     screen.blit(debug_text, (10,50))
 
-      # "Merry Christmas" on the LEFT side
-    merry_left = font.render("Merry Christmas", True, GOLD)
-    left_rect = merry_left.get_rect(midleft=(20, HEIGHT - 50))
-    pygame.draw.rect(screen, DARK_GREEN, (left_rect.x-10, left_rect.y-5, left_rect.width+20, left_rect.height+10))
-    pygame.draw.rect(screen, WHITE, (left_rect.x-5, left_rect.y, left_rect.width+10, left_rect.height), 2)
-    screen.blit(merry_left, left_rect)
-
-    # "Controls!" on the RIGHT side
-    merry_right = font.render("Space Bar = Fire, Arrows = Move", True, RED)
-    right_rect = merry_right.get_rect(midright=(WIDTH-20, HEIGHT - 50))
-
-    pygame.draw.rect(screen, DARK_GREEN, (right_rect.top=0,right_rect.width+20, right_rect.height+10))
-    pygame.draw.rect(screen, WHITE, (right_rect.top=0, right_rect.width+10, right_rect.height), 2)
-
+    # "Merry Christmas" at the TOP of the screen
+    merry_text = font.render("Merry Christmas", True, GOLD)                    # uses normal 36pt font
+    text_rect = merry_text.get_rect(center=(WIDTH // 2, 40))                  # 40 pixels from top
+    pygame.draw.rect(screen, DARK_GREEN, (text_rect.x-15, text_rect.y-8, 
+                                          text_rect.width+30, text_rect.height+16))
+    pygame.draw.rect(screen, WHITE, (text_rect.x-10, text_rect.y-3, 
+                                     text_rect.width+20, text_rect.height+6), 2)
+    screen.blit(merry_text, text_rect)
     
-    # pygame.draw.rect(screen, DARK_GREEN, (right_rect.x-10, right_rect.y-5, right_rect.width+20, right_rect.height+10))
-    # pygame.draw.rect(screen, WHITE, (right_rect.x-5, right_rect.y, right_rect.width+10, right_rect.height), 2)
-    screen.blit(merry_right, right_rect)  
-    
-    
-    # #Merry Christmas (MOVED UP - NO COVER! OLD CODE BOTTOM OF SCREEN)
-    # merry_text = font.render("Merry Christmas!", True, GOLD)
-    # text_rect = merry_text.get_rect(center=(WIDTH//2, HEIGHT - 40))  # FIXED!
-    # pygame.draw.rect(screen, DARK_GREEN, (text_rect.x-20, text_rect.y-10, text_rect.width+20, text_rect.height+10))
-    # pygame.draw.rect(screen, WHITE, (text_rect.x-15, text_rect.y-5, text_rect.width+30, text_rect.height+10), 2)
-    # screen.blit(merry_text, text_rect)
+    # "Merry Christmas" on the LEFT side
+    # merry_left = font.render("Merry Christmas", True, GOLD)
+    # left_rect = merry_left.get_rect(midleft=(20, HEIGHT - 50))
+    # pygame.draw.rect(screen, DARK_GREEN, (left_rect.x-10, left_rect.y-5, left_rect.width+20, left_rect.height+10))
+    # pygame.draw.rect(screen, WHITE, (left_rect.x-5, left_rect.y, left_rect.width+10, left_rect.height), 2)
+    # screen.blit(merry_left, left_rect)
+  
 
+    # Tiny "Controls" text at bottom center
+    controls_text = font.render("← → Move    Space = Fire", True, (200, 200, 200))  # light gray
+    # Make it much smaller
+    small_font = pygame.font.SysFont("arial", 18, bold=False)   # 18pt = very small
+    controls_surf = small_font.render("← → Move    Space = Fire", True, (220, 220, 220))
+    
+    controls_rect = controls_surf.get_rect(center=(WIDTH // 2, HEIGHT - 20))  # 20px from bottom
+    screen.blit(controls_surf, controls_rect)
+    
     # Overlays
     if game_over:
         over_text = big_font.render("GAME OVER", True, RED)
