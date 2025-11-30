@@ -230,9 +230,55 @@ while running:
         screen.blit(over_text, over_text.get_rect(center=(WIDTH//2, HEIGHT//2-30)))
         screen.blit(font.render("Press R to Restart", True, WHITE), (WIDTH//2-150, HEIGHT//2+30))
     elif victory:
-        win_text = big_font.render("Blitzen the Reindeer & You Have Saved CHRISTMAS from the Bad Grinch! The Skies are Clear!", True, GOLD)
-        screen.blit(win_text, win_text.get_rect(center=(WIDTH//2, HEIGHT//2-30)))
-        screen.blit(font.render("Press R for More!", True, WHITE), (WIDTH//2-150, HEIGHT//2+30))
+        # Festive multi-line victory message
+        lines = [
+            "Blitzen the Reindeer & You",
+            "Have Saved CHRISTMAS",
+            "from the Evil Grinch!",
+            "The Skies are Clear Again!"
+        ]
+
+        # Use a nice bold festive font
+        victory_font = pygame.font.SysFont("comicsansms", 48, bold=True)
+        small_font   = pygame.font.SysFont("comicsansms", 32)
+
+        # Render each line in GOLD
+        rendered_lines = [victory_font.render(line, True, GOLD) for line in lines[:2]]
+        rendered_lines += [small_font.render(line, True, GOLD) for line in lines[2:]]
+
+        # Center all lines vertically & horizontally
+        total_height = sum(line.get_height() + 8 for line in rendered_lines) - 8
+        y_start = HEIGHT // 2 - total_height // 2 - 40
+
+        for i, line_surf in enumerate(rendered_lines):
+            line_rect = line_surf.get_rect(center=(WIDTH // 2, y_start + i * (line_surf.get_height() + 12)))
+            
+            # Optional: add a soft red/green glow behind each line
+            glow = pygame.Surface((line_rect.width + 40, line_rect.height + 20), pygame.SRCALPHA)
+            pygame.draw.rect(glow, (255, 50, 50, 40), glow.get_rect(), border_radius=15)
+            screen.blit(glow, (line_rect.x - 20, line_rect.y - 10))
+            
+            screen.blit(line_surf, line_rect)
+
+        # Twinkling stars around the victory text
+        for _ in range(40):
+            angle = random.random() * 6.28
+            dist = 180 + random.randint(0, 80)
+            x = WIDTH // 2 + math.cos(angle) * dist
+            y = HEIGHT // 2 + math.sin(angle) * dist * 0.6
+            brightness = 150 + 100 * math.sin(pygame.time.get_ticks() * 0.01 + _)
+            color = (255, min(255, int(brightness)), 100) if _ % 2 else (min(255, int(brightness)), 255, 100)
+            pygame.draw.circle(screen, color, (int(x), int(y)), 3)
+
+        # Press R message (clean & centered)
+        restart_surf = font.render("Press R to Save Christmas Again!", True, WHITE)
+        restart_rect = restart_surf.get_rect(center=(WIDTH // 2, HEIGHT - 100))
+        screen.blit(restart_surf, restart_rect)
+    
+    # elif victory:
+    #    win_text = big_font.render("Blitzen the Reindeer & You Have Saved CHRISTMAS from the Bad Grinch! The Skies are Clear!", True, GOLD)
+    #    screen.blit(win_text, win_text.get_rect(center=(WIDTH//2, HEIGHT//2-30)))
+    #    screen.blit(font.render("Press R for More!", True, WHITE), (WIDTH//2-150, HEIGHT//2+30))
 
     pygame.display.flip()
 
