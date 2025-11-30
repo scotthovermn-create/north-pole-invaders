@@ -30,32 +30,45 @@ score = 0
 lives = 3
 game_over = False
 
-# Simple sprites (no files needed)
-def make_sprite(color, shape):
-    s = pygame.Surface((60, 60), pygame.SRCALPHA)
-    if shape == "tree":
-        pygame.draw.polygon(s, GREEN, [(30,5),(10,55),(50,55)])
-        pygame.draw.rect(s, (139,69,19), (25,50,10,15))
-    elif shape == "snowman":
-        pygame.draw.circle(s, WHITE, (30,20), 18)
-        pygame.draw.circle(s, WHITE, (30,50), 22)
-    elif shape == "reindeer":
-        pygame.draw.ellipse(s, (139,69,19), (15,10,30,30))
-    elif shape == "santa":
-        pygame.draw.circle(s, RED, (30,20), 20)
-        pygame.draw.rect(s, RED, (15,35,30,25))
-    elif shape == "sleigh":
-        pygame.draw.polygon(s, RED, [(0,30),(70,20),(80,50),(0,50)])
-    elif shape == "gift":
-        pygame.draw.rect(s, GOLD, (0,0,20,30))
-    return s
+# Simple sprites WITH PNG LOADING (tries assets first!)
+def load_image(name, scale=None):
+    path = os.path.join("assets", name)
+    if os.path.exists(path):
+        img = pygame.image.load(path).convert_alpha()
+        if scale:
+            img = pygame.transform.scale(img, scale)
+        return img
+    # Fallback shapes if PNG missing
+    img = pygame.Surface((60, 60), pygame.SRCALPHA)
+    if "santa" in name:
+        pygame.draw.circle(img, RED, (30,20), 20)
+        pygame.draw.rect(img, WHITE, (15,35,30,25))
+    elif "reindeer" in name:
+        pygame.draw.ellipse(img, (139,69,19), (15,10,30,30))
+        pygame.draw.circle(img, RED, (30,5), 3)  # Red nose
+    elif "tree" in name:
+        pygame.draw.polygon(img, GREEN, [(30,5),(10,55),(50,55)])
+        pygame.draw.rect(img, (139,69,19), (25,50,10,15))
+    elif "snowman" in name:
+        pygame.draw.circle(img, WHITE, (30,20), 18)
+        pygame.draw.circle(img, WHITE, (30,50), 22)
+    elif "sleigh" in name:
+        pygame.draw.polygon(img, RED, [(0,30),(70,20),(80,50),(0,50)])
+    elif "gift" in name:
+        pygame.draw.rect(img, GOLD, (0,0,20,30))
+        pygame.draw.line(img, RED, (0,10), (20,10), 2)
+        pygame.draw.line(img, RED, (10,0), (10,30), 2)
+    if scale:
+        img = pygame.transform.scale(img, scale)
+    return img
 
-player_img = make_sprite(RED, "sleigh")
-bullet_img = make_sprite(GOLD, "gift")
-tree_img = make_sprite(GREEN, "tree")
-snowman_img = make_sprite(WHITE, "snowman")
-reindeer_img = make_sprite((139,69,19), "reindeer")
-santa_img = make_sprite(RED, "santa")
+# Load PNGs (or fallbacks)
+player_img = load_image("player_sleigh.png", (80, 60))
+bullet_img = load_image("gift.png", (20, 30))
+tree_img = load_image("tree.png", (60, 70))
+snowman_img = load_image("snowman.png", (60, 70))
+reindeer_img = load_image("reindeer.png", (70, 60))
+santa_img = load_image("santa.png", (60, 60))
 
 invader_imgs = [tree_img, snowman_img, reindeer_img, santa_img, santa_img]
 
