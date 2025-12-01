@@ -206,18 +206,69 @@ while running:
     # "Merry Christmas" at the top — now REAL cursive!
     title_surf = christmas_font_big.render("Merry Christmas", True, GOLD)
     title_rect = title_surf.get_rect(center=(WIDTH // 2, 60))
-    screen.blit(title_surf, title_rect)
+    screen.blit(title_surf, title_rect)     
+
+
+# Assuming you already have pygame initialized and these variables:
+# screen, WIDTH, HEIGHT
+
+def draw_twinkling_border(screen, WIDTH, HEIGHT):
+    num_lights = 120  # Total lights around the border (more = smoother)
+    border_offset = 30  # Distance from screen edge
+    
+    # Calculate perimeter positions
+    perimeter = 2 * (WIDTH - 2*border_offset) + 2 * (HEIGHT - 2*border_offset)
+    segment_length = perimeter / num_lights
+    
+    t = pygame.time.get_ticks() * 0.001  # Time for animation
+    
+    for i in range(num_lights):
+        # Position along the perimeter (0 to perimeter)
+        pos = (i + t * 30) % num_lights * segment_length  # The "+ t*30" makes them flow!
+        
+        # Determine which side we're on and compute (x, y)
+        if pos < (WIDTH - 2*border_offset):  # Top side
+            x = border_offset + pos
+            y = border_offset
+        elif pos < (WIDTH - 2*border_offset) + (HEIGHT - 2*border_offset):  # Right side
+            x = WIDTH - border_offset
+            y = border_offset + (pos - (WIDTH - 2*border_offset))
+        elif pos < 2*(WIDTH - 2*border_offset) + (HEIGHT - 2*border_offset):  # Bottom side
+            x = WIDTH - border_offset - (pos - (WIDTH - 2*border_offset) + (HEIGHT - 2*border_offset))
+            y = HEIGHT - border_offset
+        else:  # Left side
+            x = border_offset
+            y = HEIGHT - border_offset - (pos - 2*(WIDTH - 2*border_offset) - (HEIGHT - 2*border_offset))
+        
+        # Twinkling brightness (individual + wave)
+        brightness = 180 + 75 * math.sin(t * 7 + i * 0.8)
+        
+        # Color cycle (rainbow Christmas lights feel)
+        colors = [(255,0,0), (0,255,0), (255,215,0), (0,255,255), (255,100,200), (180,0,255)]
+        col = colors[i % len(colors)]
+        
+        # Apply brightness
+        color = tuple(min(255, int(c * brightness / 255)) for c in col)
+        
+        # Slight pulsing size
+        radius = 5 + 2 * math.sin(t * 10 + i)
+        
+        pygame.draw.circle(screen, color, (int(x), int(y)), int(radius))
+
+# Call this every frame in your main loop:
+# Call this every frame in your main loop:
+# draw_twinkling_border(screen, WIDTH, HEIGHT)
 
     # Twinkling lights around the title (same as before)
-    for i in range(32):
-        angle = i * 0.196
-        radius = 110 + 12 * math.sin(pygame.time.get_ticks() * 0.004 + i)
-        x = WIDTH // 2 + math.cos(angle) * radius
-        y = 60 + math.sin(angle) * 45
-        brightness = 180 + 75 * math.sin(pygame.time.get_ticks() * 0.007 + i)
-        col = [(255,0,0),(0,255,0),(255,215,0),(0,255,255),(255,100,200)][i%5]
-        color = tuple(min(255, int(c * brightness/255)) for c in col)
-        pygame.draw.circle(screen, color, (int(x), int(y)), 5)
+    # for i in range(32):
+    #    angle = i * 0.196
+     #   radius = 110 + 12 * math.sin(pygame.time.get_ticks() * 0.004 + i)
+    #    x = WIDTH // 2 + math.cos(angle) * radius
+   #     y = 60 + math.sin(angle) * 45
+   #     brightness = 180 + 75 * math.sin(pygame.time.get_ticks() * 0.007 + i)
+   #     col = [(255,0,0),(0,255,0),(255,215,0),(0,255,255),(255,100,200)][i%5]
+   #     color = tuple(min(255, int(c * brightness/255)) for c in col)
+   #     pygame.draw.circle(screen, color, (int(x), int(y)), 5)
     
     # Overlays
     if game_over:
