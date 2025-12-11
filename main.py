@@ -267,7 +267,7 @@ while running:
             c = random.choice([(255,0,0),(0,255,0),(255,215,0),(255,255,255)])
             pygame.draw.circle(screen, c, (int(x), int(y)), random.randint(2,5))
 
-        restart = christmas_font_small.render("Press R to Save Christmas Again!", True, WHITE)
+        restart = font.render("Blitzen and You Saved Christmas from Grinchy! Press R to play again!", True, WHITE)
         screen.blit(restart, restart.get_rect(center=(WIDTH // 2, HEIGHT - 100)))
         
         # OLD ELFIN VICTORY
