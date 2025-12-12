@@ -185,6 +185,12 @@ while running:
             victory = True
             if victory_sound: victory_sound.play()
 
+     # if victory and not victory_triggered:  # e.g., if player_wins:
+       # if victory_sound:
+           # victory_sound.play()
+        victory_triggered = True  # Prevent repeats
+
+
     # Draw
     screen.blit(player_img, (int(player_x), player_y))  # Int for blit
     for b in bullets: screen.blit(bullet_img, (b.x, b.y))
@@ -273,11 +279,7 @@ while running:
             screen.blit(surf, rect)
             y += surf.get_height() + 15
            
-            # In your game loop (wherever you check victory)
-            running = True 
-            while running:
-            clock.tick(60)
-            screen.blit(background, (0,0))
+            
     
         # Victory stars
         for _ in range(50):
@@ -288,11 +290,7 @@ while running:
             c = random.choice([(255,0,0),(0,255,0),(255,215,0),(255,255,255)])
             pygame.draw.circle(screen, c, (int(x), int(y)), random.randint(2,5))
 
-        if victory and not victory_triggered:  # e.g., if player_wins:
-        if victory_sound:
-            victory_sound.play()
-        victory_triggered = True  # Prevent repeats
-
+       
         restart = font.render("Blitzen and You Saved Christmas from Grinchy! Press R to play again!", True, WHITE)
         screen.blit(restart, restart.get_rect(center=(WIDTH // 2, HEIGHT - 100)))
         
