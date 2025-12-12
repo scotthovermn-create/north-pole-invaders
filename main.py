@@ -183,12 +183,12 @@ while running:
 
         if len(invaders) == 0: 
             victory = True
-            if victory_sound: victory_sound.play()
+            #if victory_sound: victory_sound.play()
 
-     # if victory and not victory_triggered:  # e.g., if player_wins:
-       # if victory_sound:
-           # victory_sound.play()
-        victory_triggered = True  # Prevent repeats
+           if victory and not victory_triggered:  # e.g., if player_wins:
+           if victory_sound:
+           victory_sound.play()
+           victory_triggered = True  # Prevent repeats
 
 
     # Draw
