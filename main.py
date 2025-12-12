@@ -226,7 +226,7 @@ while running:
 
     # "Merry Christmas" at the top — now REAL cursive!
     title_surf = christmas_font_med.render("Merry Christmas", True, GREEN)
-    title_rect = title_surf.get_rect(center=(WIDTH // 2, 60))
+    title_rect = title_surf.get_rect(center=(WIDTH // 2, 20))
     screen.blit(title_surf, title_rect)     
 
 
@@ -261,8 +261,8 @@ while running:
 
         # Use the real Christmas font!
         rendered = [
-            christmas_font_med.render(lines[0], True, GOLD),
-            christmas_font_med.render(lines[1], True, GOLD),
+            christmas_font_small.render(lines[0], True, GOLD),
+            christmas_font_small.render(lines[1], True, GOLD),
             christmas_font_small.render(lines[2], True, GOLD),
             christmas_font_small.render(lines[3], True, GOLD)
         ]
