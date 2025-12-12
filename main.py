@@ -226,7 +226,7 @@ while running:
 
     # "Merry Christmas" at the top — now REAL cursive!
     title_surf = christmas_font_med.render("Merry Christmas", True, GREEN)
-    title_rect = title_surf.get_rect(center=(WIDTH // 2, 20))
+    title_rect = title_surf.get_rect(center=(WIDTH // 2, 26))
     screen.blit(title_surf, title_rect)     
 
 
@@ -291,7 +291,7 @@ while running:
             pygame.draw.circle(screen, c, (int(x), int(y)), random.randint(2,5))
 
        
-        restart = font.render("Blitzen and You Saved Christmas from Grinchy! Press R to play again!", True, WHITE)
+        restart = christmas_font_med.render("Blitzen and You Saved Christmas from Grinchy! Press R to play again!", True, WHITE)
         screen.blit(restart, restart.get_rect(center=(WIDTH // 2, HEIGHT - 100)))
         
         # OLD ELFIN VICTORY
