@@ -293,7 +293,7 @@ while running:
             pygame.draw.circle(screen, c, (int(x), int(y)), random.randint(2,5))
 
        
-        restart = christmas_font_tiny.render("Blitzen thanks you for helping him save Christmas! Press R to play again!", True, WHITE)
+        restart = christmas_font_tiny.render("Blitzen thanks you for helping us save Christmas! Press R to play again", True, WHITE)
         screen.blit(restart, restart.get_rect(center=(WIDTH // 2, HEIGHT - 100)))
         
         # OLD ELFIN VICTORY
