@@ -108,11 +108,11 @@ try:
 except:
     pass  # No audio? No problem!
     
-# victory_sound = pygame.mixer.Sound(os.path.join("assets", "victory.ogg"))
+# victory_sound = pygame.mixer.Sound(os.path.join("assets", "victory2.ogg"))
 # victory_sound.set_volume(0.6)
 victory_sound = None
 try:
-    victory_sound = pygame.mixer.Sound(os.path.join("assets", "victory.ogg"))
+    victory_sound = pygame.mixer.Sound(os.path.join("assets", "victory2.ogg"))
     victory_sound.set_volume(0.6)
 except:
     pass
@@ -183,9 +183,9 @@ while running:
 
         if len(invaders) == 0: 
             victory = True
-            #if victory_sound: victory_sound.play()
+           # if victory_sound: victory_sound.play()
 
-           if victory and not victory_triggered:  # e.g., if player_wins:
+           # if victory and not victory_triggered:  # e.g., if player_wins:
            if victory_sound:
            victory_sound.play()
            victory_triggered = True  # Prevent repeats
