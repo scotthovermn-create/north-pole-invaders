@@ -188,7 +188,7 @@ while running:
            # if victory and not victory_triggered:  # e.g., if player_wins:
            # if victory_sound:
            # victory_sound.play()
-           # victory_triggered = True  # Prevent repeats
+           victory_triggered = True  # Prevent repeats
 
 
     # Draw
