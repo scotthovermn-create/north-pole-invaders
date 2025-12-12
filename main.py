@@ -105,6 +105,9 @@ try:
     shoot_sound.set_volume(0.3)
 except:
     pass  # No audio? No problem!
+    
+victory_sound = pygame.mixer.Sound(os.path.join("assets", "victory.ogg"))
+victory_sound.set_volume(0.6)
 
 running = True
 while running:
@@ -168,7 +171,9 @@ while running:
             else: continue
             break
 
-        if len(invaders) == 0: victory = True
+        if len(invaders) == 0: 
+            victory = True
+            if victory_sound: victory_sound.play()
 
     # Draw
     screen.blit(player_img, (int(player_x), player_y))  # Int for blit
