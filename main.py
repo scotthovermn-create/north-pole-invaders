@@ -34,6 +34,8 @@ score = 0
 lives = 3
 game_over = False
 victory = False
+# In your game state/variables
+victory_triggered = False  # Add this
 invader_direction = 1
 player_x = float(WIDTH // 2 - 40)
 player_y = HEIGHT - 100
@@ -106,9 +108,17 @@ try:
 except:
     pass  # No audio? No problem!
     
-victory_sound = pygame.mixer.Sound(os.path.join("assets", "victory.ogg"))
-victory_sound.set_volume(0.6)
+# victory_sound = pygame.mixer.Sound(os.path.join("assets", "victory.ogg"))
+# victory_sound.set_volume(0.6)
+victory_sound = None
+try:
+    victory_sound = pygame.mixer.Sound(os.path.join("assets", "victory.ogg"))
+    victory_sound.set_volume(0.6)
+except:
+    pass
 
+
+  
 running = True
 while running:
     clock.tick(60)
@@ -262,7 +272,13 @@ while running:
             screen.blit(glow, (rect.x - 25, rect.y - 15))
             screen.blit(surf, rect)
             y += surf.get_height() + 15
-
+           
+            # In your game loop (wherever you check victory)
+            running = True 
+            while running:
+            clock.tick(60)
+            screen.blit(background, (0,0))
+    
         # Victory stars
         for _ in range(50):
             a = random.random() * 6.28
@@ -271,6 +287,11 @@ while running:
             y = HEIGHT // 2 + math.sin(a) * d * 0.6
             c = random.choice([(255,0,0),(0,255,0),(255,215,0),(255,255,255)])
             pygame.draw.circle(screen, c, (int(x), int(y)), random.randint(2,5))
+
+        if victory and not victory_triggered:  # e.g., if player_wins:
+        if victory_sound:
+            victory_sound.play()
+        victory_triggered = True  # Prevent repeats
 
         restart = font.render("Blitzen and You Saved Christmas from Grinchy! Press R to play again!", True, WHITE)
         screen.blit(restart, restart.get_rect(center=(WIDTH // 2, HEIGHT - 100)))
