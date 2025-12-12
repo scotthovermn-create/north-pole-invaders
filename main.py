@@ -41,7 +41,7 @@ player_x = float(WIDTH // 2 - 40)
 player_y = HEIGHT - 100
 player_speed = 8.0
 bullet_speed = 12
-invader_speed = 1.5  # SMOOTH FLOAT NOW!
+invader_speed = 2  # SMOOTH FLOAT NOW! 1.5
 invader_drop = 25
 
 def load_image(name, scale=None):
