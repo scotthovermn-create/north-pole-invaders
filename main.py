@@ -205,7 +205,7 @@ while running:
     screen.blit(debug_text, (10,50))
 
     # "Merry Christmas" at the TOP of the screen
-    # merry_text = font.render("Merry Christmas", True, GOLD)                    # uses normal 36pt font
+    # merry_text = font.render("Merry Christmas", True, GREEN)                    # uses normal 36pt font
     # text_rect = merry_text.get_rect(center=(WIDTH // 2, 40))                  # 40 pixels from top
     # pygame.draw.rect(screen, DARK_GREEN, (text_rect.x-15, text_rect.y-8, 
     #                                      text_rect.width+30, text_rect.height+16))
