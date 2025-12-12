@@ -218,13 +218,13 @@ while running:
         christmas_font_big   = pygame.font.Font("assets/JandaChristmasDoodles.ttf", 72)  # Title
         christmas_font_med   = pygame.font.Font("assets/MountainsOfChristmas.ttf", 56)  # Victory main lines
         christmas_font_small = pygame.font.Font("assets/JandaChristmasDoodles.ttf", 44)  # Victory small lines
-        christmas_font_tiny = pygame.font.Font("assets/to/MountainOfChristmas.ttf", 30) #Victory tiny lines 
+        christmas_font_tiny = pygame.font.Font("assets/MountainsOfChristmas.ttf", 30) #Victory tiny lines 
     except:
         # Fallback if something goes wrong (will never happen if file is there)
         christmas_font_big   = pygame.font.SysFont("comicsansms", 72, bold=True, italic=True)
         christmas_font_med   = pygame.font.SysFont("comicsansms", 56, bold=True)
         christmas_font_small = pygame.font.SysFont("comicsansms", 44)
-        christmas_font_tiny = pygame.font.SysFont("comicsansms", 44)
+        christmas_font_tiny = pygame.font.SysFont("comicsansms", 24)
 
     # "Merry Christmas" at the top — now REAL cursive!
     title_surf = christmas_font_med.render("Merry Christmas", True, GREEN)
