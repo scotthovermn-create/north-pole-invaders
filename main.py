@@ -224,7 +224,7 @@ while running:
         christmas_font_big   = pygame.font.SysFont("comicsansms", 72, bold=True, italic=True)
         christmas_font_med   = pygame.font.SysFont("comicsansms", 56, bold=True)
         christmas_font_small = pygame.font.SysFont("comicsansms", 44)
-        christmas_font_tiny = pygame.font.SysFont("comicsansms", 24)
+        christmas_font_tiny = pygame.font.SysFont("comicsansms", 30)
 
     # "Merry Christmas" at the top — now REAL cursive!
     title_surf = christmas_font_med.render("Merry Christmas", True, GREEN)
