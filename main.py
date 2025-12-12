@@ -99,9 +99,9 @@ def reset_game():
 reset_game()
 
 # Safe sound
-# shoot_sound = None
+shoot_sound = None
 try:
-    shoot_sound = pygame.mixer.Sound(os.path.join("assets", "twinkling.wav"))
+    shoot_sound = pygame.mixer.Sound(os.path.join("assets", "twinkling.ogg"))
     shoot_sound.set_volume(0.3)
 except:
     pass  # No audio? No problem!
