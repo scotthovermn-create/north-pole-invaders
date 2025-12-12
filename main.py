@@ -183,7 +183,7 @@ while running:
 
         if len(invaders) == 0: 
             victory = True
-            if victory_sound: victory_sound.play()
+            # if victory_sound: victory_sound.play()
 
            # if victory and not victory_triggered:  # e.g., if player_wins:
            # if victory_sound:
@@ -298,7 +298,7 @@ while running:
         # win_text = big_font.render("YOU SAVED CHRISTMAS!", True, GOLD)
         # screen.blit(win_text, win_text.get_rect(center=(WIDTH//2, HEIGHT//2-30)))
         # screen.blit(font.render("Press R for More!", True, WHITE), (WIDTH//2-150, HEIGHT//2+30))
-
+     victory_sound = victory_sound.play()
     
     # Tiny "Controls" text at bottom center
     controls_text = font.render("← → Move    Space = Fire", True, (200, 200, 200))  # light gray
